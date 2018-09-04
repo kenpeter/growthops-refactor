@@ -10,6 +10,9 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class ExportApplicationsCommand extends Command
 {
+    const TIME_MODE = 'time';
+    const INTERVAL_MODE = 'interval';
+
     /**
      * The console command name.
      *
@@ -31,8 +34,52 @@ class ExportApplicationsCommand extends Command
      */
     public function fire()
     {
-        $this->line('Welcome to the user generator.');
+        $mode = $this->argument('mode');
+        if($mode === self::TIME_MODE) {
+            $startStr = $this->option('start');
+            $endStr = $this->option('end');
+
+
+        } else if($mode === self::INTERVAL_MODE) {
+
+        } else {
+            // mode not supported
+        }
     }
 
+    /**
+     * Get the console command arguments.
+     *
+     * @return array
+     */
+    protected function getArguments()
+    {
+        return [
+            [
+                'applications_filepath',
+                InputArgument::REQUIRED,
+                'Path to store applications CSV locally',
+            ],
+
+            [
+                'mode',
+                InputArgument::REQUIRED,
+                'Mode can be interval, time and more can be added',
+            ],
+        ];
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['start', 's', InputOption::VALUE_REQUIRED, 'Start time in string'],
+            ['end', 'e', InputOption::VALUE_REQUIRED, 'end time in string'],
+        ];
+    }
 
 }
