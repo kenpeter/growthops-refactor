@@ -133,11 +133,13 @@ class ExportApplicationsCommand extends Command
         $csvString = $this->convertToCsv($csvArray);
 
         // Get the path where the csv should be written into
+        // local filename
         $filename = $this->argument('applications_filepath');
 
         // Write the csv
         file_put_contents($filename, $csvString);
 
+        // cloud folder
         $folder = 'Applications - Follow Up/';
 
         // Upload csv to cloud storage

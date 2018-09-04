@@ -1,12 +1,13 @@
 <?php
 
-// cmd
+namespace App;
+
 use Illuminate\Console\Command;
-// input
 use Symfony\Component\Console\Input\InputOption;
-// arg
 use Symfony\Component\Console\Input\InputArgument;
 
+use App\ApplicationExporter;
+use App\Util;
 
 class ExportApplicationsCommand extends Command
 {
@@ -34,17 +35,24 @@ class ExportApplicationsCommand extends Command
      */
     public function fire()
     {
-        $mode = $this->argument('mode');
+        $mode = $this->option('mode');
+        $inputPath = $this->option('inputPath'); // for local file
+        $outputFolder = $this->option('outputFolder'); // for cloud folder
+        $applicationExporter = new \ApplicationExporter();
+
         if($mode === self::TIME_MODE) {
             $startStr = $this->option('start');
             $endStr = $this->option('end');
-
-
         } else if($mode === self::INTERVAL_MODE) {
-
+            $util = new Util();
+            $arr = $util->getIntervalDateRange();
+            $startStr = $arr[0];
+            $endStr = $arr[1];
         } else {
             // mode not supported
         }
+
+        $applicationExporter->export($startStr, $endStr, $inputPath, $outputFolder);
     }
 
     /**
@@ -54,19 +62,7 @@ class ExportApplicationsCommand extends Command
      */
     protected function getArguments()
     {
-        return [
-            [
-                'applications_filepath',
-                InputArgument::REQUIRED,
-                'Path to store applications CSV locally',
-            ],
-
-            [
-                'mode',
-                InputArgument::REQUIRED,
-                'Mode can be interval, time and more can be added',
-            ],
-        ];
+        return [];
     }
 
     /**
@@ -77,8 +73,11 @@ class ExportApplicationsCommand extends Command
     protected function getOptions()
     {
         return [
-            ['start', 's', InputOption::VALUE_REQUIRED, 'Start time in string'],
-            ['end', 'e', InputOption::VALUE_REQUIRED, 'end time in string'],
+            ['mode', 'm', InputOption::VALUE_OPTIONAL, 'mode: time or interval'],
+            ['inputPath', 'i', InputOption::VALUE_OPTIONAL, 'input file path'],
+            ['outputFolder', 'o', InputOption::VALUE_OPTIONAL, 'output folder'],
+            ['start', 's', InputOption::VALUE_OPTIONAL, 'Start time in string'],
+            ['end', 'e', InputOption::VALUE_OPTIONAL, 'end time in string'],
         ];
     }
 
